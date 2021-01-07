@@ -45,11 +45,12 @@
 
 -(void) resultPicker:(NSMutableArray*) selectArray
 {
+{
     
-    NSString * tmpDir = NSTemporaryDirectory();
-    NSString *dmcPickerPath = [tmpDir stringByAppendingPathComponent:@"dmcPicker"];
+    NSString *cacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory,NSUserDomainMask,YES)lastObject];   
+    // NSString * tmpDir = NSTemporaryDirectory();
+    NSString *dmcPickerPath = [cacheDir stringByAppendingPathComponent:@"dmcPicker"];
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    if(![fileManager fileExistsAtPath:dmcPickerPath ]){
        [fileManager createDirectoryAtPath:dmcPickerPath withIntermediateDirectories:YES attributes:nil error:nil];
     }
     
