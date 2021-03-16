@@ -46,7 +46,7 @@
 -(void) resultPicker:(NSMutableArray*) selectArray
 {
     
-    NSString *cacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory,NSUserDomainMask,YES)lastObject];
+    NSString *cacheDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES)lastObject];
     
    // NSString * tmpDir = NSTemporaryDirectory();
     NSString *dmcPickerPath = [cacheDir stringByAppendingPathComponent:@"dmcPicker"];
@@ -110,6 +110,7 @@
                 }
             }
         } else {
+            NSLog(@"imageData is null");
             [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:NSLocalizedString(@"photo_download_failed", nil)] callbackId:callbackId];
         }
     }];
@@ -138,10 +139,13 @@
 
 -(void)videoToSandbox:(PHAsset *)asset dmcPickerPath:(NSString*)dmcPickerPath aListArray:(NSMutableArray*)aListArray selectArray:(NSMutableArray*)selectArray index:(int)index{
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-    options.networkAccessAllowed = YES;
+    options.synchronous = false;
+    options.networkAccessAllowed = true;
+    options.version = PHImageRequestOptionsVersionOriginal;
     options.resizeMode = PHImageRequestOptionsResizeModeFast;
     options.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
         NSString *compressCompletedjs = [NSString stringWithFormat:@"MediaPicker.icloudDownloadEvent(%f,%i)", progress,index];
+        NSLog(@"Progress: %@",compressCompletedjs);
         [self.commandDelegate evalJs:compressCompletedjs];
     };
     [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *avsset, AVAudioMix *audioMix, NSDictionary *info) {
